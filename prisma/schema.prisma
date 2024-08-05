@@ -16,6 +16,28 @@ datasource db {
 model Session {
   id        String   @id
   sid       String   @unique
-  data      String // MediumText may be needed for MySql
+  data      String
   expiresAt DateTime
+}
+
+model User {
+  id     String  @id @default(uuid())
+  email  String  @unique
+  pseudo String
+  hash   String
+  role   Role    @default(BASIC)
+  Files  Files[]
+}
+
+model Files {
+  id        String   @id @default(uuid())
+  title     String
+  createdAt DateTime @default(now())
+  owner     User     @relation(fields: [ownerId], references: [id])
+  ownerId   String
+}
+
+enum Role {
+  BASIC
+  ADMIN
 }

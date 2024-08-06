@@ -1,4 +1,9 @@
 <header class="flex flex-al-it-center padleft2 gap05 header">
-  <h1 class="radio-canada-big-400 logo">Conterfeit Cloud</h1>
+  <h1 class="radio-canada-big-400 logo">Cheapest Cloud</h1>
   <p class="page playfair-display-400">/<%= title %></p>
+
+  <% if (isAuth) { %> 
+    <a href="/logout">Log Out</a>
+    <a href="/upload">Upload</a>
+  <% } %>
 </header>

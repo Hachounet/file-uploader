@@ -5,18 +5,30 @@
     <%- include("./partials/header.ejs") %>
 
     <div
-      class="app-container flex flex-al-it-center flex-just-cont-center gap1"
+      class="app-container flex flex-al-it-center flex-just-cont-center gap1 flex-dir-col"
     >
       <form
         class="flex flex-dir-col flex-just-cont-center flex-al-it-center gap05"
-        action=""
+        action="/login" method="POST"
       >
         <label for="email">Email:</label>
-        <input type="email" />
+        <input type="email" name="email" />
         <label for="pw">Password</label>
-        <input type="password" />
+        <input type="password" name="pw"/>
         <button type="submit">Sign up</button>
       </form>
+      <% if (flashMess.length > 0) { %>
+        <div class="error">
+          <%= flashMess %>
+        </div>
+      <% } %>
+      <% if (errors.length) { %>
+        <ul>
+            <% errors.forEach((error) => { %>
+            <li><%= error.msg %></li>
+            <% }) %>
+        </ul>
+   <% } %>
     </div>
   </body>
 </html>

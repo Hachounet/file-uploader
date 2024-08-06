@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+  <%- include("./partials/head.ejs") %>
+  <body class="flex flex-dir-col">
+    <%- include("./partials/header.ejs") %>
+
+    <div class="app-container flex flex-al-it-center flex-just-cont-center gap1 flex-dir-col">
+        <p>Delete this folder will also delete all related files. Do you really want to perform this action ? </p>
+      <form class="flex flex-dir-col flex-just-cont-center flex-al-it-center gap05" action="/folders/<%=folder.title%>/delete" method="POST">
+        <input type="hidden" name="folderId" value="<%= folder.id %>" />
+        <button type="submit">Delete folder</button>
+      </form>
+      <% if (errors && errors.length) { %>
+        <ul>
+          <% errors.forEach((error) => { %>
+            <li><%= error.msg %></li>
+          <% }) %>
+        </ul>
+      <% } %>
+    </div>
+  </body>
+</html>

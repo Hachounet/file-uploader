@@ -9,7 +9,15 @@ const {
   getHomePage,
   getUploadPage,
   postUploadPage,
+  getLogoutPage,
+  getAddFolderPage,
+  postAddFolderPage,
 } = require("../controllers/indexController");
+const {
+  isAuth,
+  retrieveFolders,
+  retrieveFiles,
+} = require("../controllers/authMiddleware");
 
 const indexRouter = Router();
 
@@ -23,10 +31,16 @@ indexRouter.get("/login", getLoginPage);
 
 indexRouter.post("/login", postLoginPage);
 
-indexRouter.get("/home", getHomePage);
+indexRouter.get("/logout", getLogoutPage);
 
-indexRouter.get("/upload", getUploadPage);
+indexRouter.get("/home", isAuth, retrieveFolders, retrieveFiles, getHomePage);
 
-indexRouter.post("/upload", postUploadPage);
+indexRouter.get("/upload", isAuth, retrieveFolders, getUploadPage);
+
+indexRouter.post("/upload", isAuth, retrieveFolders, postUploadPage);
+
+indexRouter.get("/addfolder", isAuth, retrieveFolders, getAddFolderPage);
+
+indexRouter.post("/addfolder", isAuth, retrieveFolders, postAddFolderPage);
 
 module.exports = indexRouter;

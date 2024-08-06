@@ -4,6 +4,22 @@ const { body, validationResult } = require("express-validator");
 const passport = require("passport");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
+const multer = require("multer");
+const path = require("path");
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, path.join(__dirname, "../uploads"));
+  },
+  filename: (req, file, cb) => {
+    cb(
+      null,
+      file.fieldname + "-" + Date.now() + path.extname(file.originalname),
+    ); // Set the file name
+  },
+});
+
+const upload = multer({ storage: storage });
 
 // Custom errors //
 
@@ -28,6 +44,14 @@ const validateSignUp = [
       }
       return true;
     }),
+];
+
+const validateFolderCreation = [
+  body("foldername")
+    .trim()
+    .isLength({ min: 1, max: 50 })
+    .withMessage("Folder name must be between 1 and 50 characters.")
+    .escape(),
 ];
 
 exports.getLandingPage = (req, res, next) => {
@@ -71,14 +95,89 @@ exports.getLoginPage = (req, res, next) => {
   res.render("login", { title: "Login" });
 };
 
-exports.postLoginPage = (req, res, next) => {};
+exports.postLoginPage = (req, res, next) => {
+  passport.authenticate("local", {
+    failureRedirect: "/login",
+    failureMessage: true,
+    failureFlash: "Password or email not valid.",
+    successRedirect: "/home",
+  })(req, res, next);
+};
 
 exports.getHomePage = (req, res, next) => {
-  res.render("home", { title: "Home" });
+  console.log(req.body.allFiles);
+  res.render("home", {
+    title: "Home",
+    isAuth: req.body.isAuth,
+    folders: req.body.allFolders,
+    files: req.body.allFiles,
+  });
 };
 
 exports.getUploadPage = (req, res, next) => {
-  res.render("upload", { title: "Upload" });
+  res.render("upload", { title: "Upload", folders: req.body.allFolders });
 };
 
-exports.postUploadPage = (req, res, next) => {};
+exports.postUploadPage = [
+  upload.single("file"),
+  asyncHandler(async (req, res, next) => {
+    try {
+      await prisma.files.create({
+        data: {
+          title: req.file.originalname,
+          path: `/uploads/${req.file.filename}`,
+          ownerId: req.session.passport.user,
+          folderId: req.body.folderName,
+        },
+      });
+
+      res.redirect("home");
+    } catch (err) {
+      next(err);
+    }
+  }),
+];
+
+exports.getLogoutPage = (req, res, next) => {
+  req.logout((err) => {
+    if (err) {
+      return next(err);
+    }
+  });
+  res.redirect("/");
+};
+
+exports.getAddFolderPage = (req, res, next) => {
+  res.render("addfolder", {
+    title: "Add folder",
+    folders: req.body.allFolders,
+  });
+};
+
+exports.postAddFolderPage = [
+  validateFolderCreation,
+  asyncHandler(async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      res.locals.errors = errors.array();
+
+      res.render("addfolder", {
+        title: "Add folder",
+        errors: res.locals.errors,
+        folders: req.body.allFolders,
+      });
+    }
+    try {
+      await prisma.folder.create({
+        data: {
+          title: req.body.foldername,
+          ownerId: req.session.passport.user,
+        },
+      });
+
+      res.redirect("/folders");
+    } catch (err) {
+      next(err);
+    }
+  }),
+];

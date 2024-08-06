@@ -18,15 +18,14 @@ const verifyCallback = async (username, password, done) => {
       },
     });
     console.log("THIS IS RESULT USER", result);
-    if (result.length === 0) {
+    if (result === undefined) {
       return done(null, false, { message: "Incorrect username" });
     }
-    const user = result[0];
-    console.log(user);
-    const match = await bcrypt.compare(password, user.hash);
+    console.log("2ND FUNC", password, result.hash);
+    const match = await bcrypt.compare(password, result.hash);
 
     if (match) {
-      return done(null, user);
+      return done(null, result);
     } else {
       return done(null, false, { message: "Incorrect password" });
     }
@@ -43,19 +42,17 @@ passport.serializeUser((user, done) => {
   done(null, user.id);
 });
 
-passport.deserializeUser(async (userId, done) => {
+passport.deserializeUser(async (id, done) => {
   try {
-    console.log(userId);
-    const result = await prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: {
-        email: username, // Email assure uniqueness
+        id: id,
       },
     });
 
-    if (result.length === 0) {
+    if (!user) {
       return done(null, false);
     }
-    const user = result[0];
     return done(null, user);
   } catch (error) {
     return done(error);

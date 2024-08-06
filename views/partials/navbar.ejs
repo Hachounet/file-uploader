@@ -1,0 +1,25 @@
+<nav
+class="navbar flex flex-dir-col flex-just-cont-sp-even flex-al-it-center"
+>
+
+<div class="playfair-display-400 font-sx1 underline">
+  <a href="/home">Home</a>
+</div>
+
+<div class="playfair-display-400 font-sx1 ">
+  
+  
+  
+  <span class="underline">Folders :</span>
+    <ul>
+        <% folders.forEach((folder) => { %>
+            <li><a href="/folders/<%= folder.title %>"><%= folder.title %></a></li>
+       <% }) %>
+    </ul>
+</div>
+
+<div class="playfair-display-400 font-sx1 underline">
+  <a href="/addfolder">Add folder</a>
+  
+</div>
+</nav>

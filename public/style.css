@@ -18,9 +18,57 @@
   font-style: normal;
 }
 
+.font-sx1 {
+  font-size: 1.5rem;
+}
+
+.underline {
+  text-decoration: underline;
+}
+
 body {
-  background-color: rgb(255, 251, 237);
+  background-color: rgb(255, 255, 255);
   height: 100vh;
+}
+
+a:link {
+  text-decoration: none;
+}
+
+a:active {
+  text-decoration: none;
+}
+
+a:visited {
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: none;
+}
+
+li {
+  list-style: none;
+}
+
+.grid {
+  display: grid;
+}
+
+.gridr4 {
+  grid-template-rows: repeat(4, 1fr);
+}
+
+.gridc8 {
+  grid-template-columns: repeat(8, 1fr);
+}
+
+.grid-al-it-center {
+  align-items: center;
+}
+
+.grid-just-cont-center {
+  justify-items: center;
 }
 
 .flex {
@@ -29,6 +77,10 @@ body {
 
 .flex-just-cont-center {
   justify-content: center;
+}
+
+.flex-just-cont-sp-even {
+  justify-content: space-evenly;
 }
 
 .flex-al-it-center {
@@ -51,12 +103,21 @@ body {
   padding-left: 2rem;
 }
 
-.font-sx1 {
-  font-size: 1.5rem;
+.pad2 {
+  padding: 2rem;
+}
+
+.w100 {
+  width: 100%;
+}
+
+.h100 {
+  height: 100%;
 }
 
 .header {
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  background-color: rgb(245, 255, 254);
 }
 
 .logo {
@@ -69,4 +130,23 @@ body {
 
 .app-container {
   height: 100%;
+}
+
+.navbar {
+  width: 10vw;
+  border-right: 1px solid rgb(255, 237, 237);
+  -webkit-box-shadow: 12px 14px 14px -8px rgba(0, 0, 0, 0.25);
+  box-shadow: 12px 14px 14px -8px rgba(0, 0, 0, 0.25);
+  background-color: rgb(245, 255, 254);
+}
+
+.files-container {
+  width: 100%;
+  height: 100%;
+}
+
+.file-card {
+}
+
+.file-title {
 }

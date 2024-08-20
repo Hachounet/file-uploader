@@ -8,25 +8,20 @@
       <%- include("./partials/navbar.ejs") %>
       <div class="pad2 w100 h100">
         <div>
-          <span class="font-sx1 playfair-display-400 underline">Files:</span>
+          <span class="font-sx1 playfair-display-400 underline">All files:</span>
         </div>
         <div
           class="grid gridr4 gridc8 files-container grid-al-it-center grid-just-cont-center"
         >
-          <div
-            class="file-card flex flex-dir-col flex-just-cont-center flex-al-it-center"
-          >
-            <span>File name</span>
-            <span>File size</span>
-            <button>See more</button>
-          </div>
+          
 
           <% files.forEach((file) => { %>
                 <div
             class="file-card flex flex-dir-col flex-just-cont-center flex-al-it-center"
           >
             <span><%= file.title %></span>
-            <a href=""><button>See more</button></a>
+            
+            <a href="/folders/<%=file.folder.title%>/<%= file.title %>"><button>See more</button></a>
           </div>
            <% }) %>
         </div>

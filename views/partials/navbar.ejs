@@ -2,15 +2,13 @@
 class="navbar flex flex-dir-col flex-just-cont-sp-even flex-al-it-center"
 >
 
-<div class="playfair-display-400 font-sx1 underline">
-  <a href="/home">Home</a>
-</div>
 
-<div class="playfair-display-400 font-sx1 ">
+
+<div class="playfair-display-400 font-sx1 text-al-center">
   
   
   
-  <span class="underline">Folders :</span>
+  <span class="underline font-sx2">Folders :</span>
     <ul>
         <% folders.forEach((folder) => { %>
             <li><a href="/folders/<%= folder.title %>"><%= folder.title %></a></li>
@@ -18,7 +16,7 @@ class="navbar flex flex-dir-col flex-just-cont-sp-even flex-al-it-center"
     </ul>
 </div>
 
-<div class="playfair-display-400 font-sx1 underline">
+<div class="playfair-display-400 font-sx2 underline">
   <a href="/addfolder">Add folder</a>
   
 </div>

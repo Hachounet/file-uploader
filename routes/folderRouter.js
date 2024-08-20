@@ -8,43 +8,50 @@ const {
   getDeleteFolderPage,
   postDeleteFolderPage,
   getFilePage,
+  getDeleteFilePage,
+  postDeleteFilePage,
+  getShareFolderPage,
+  postShareFolderPage,
 } = require("../controllers/folderController");
-const { isAuth, retrieveFolders } = require("../controllers/authMiddleware");
+const {
+  isAuth,
+  retrieveOneFile,
+  retrieveFolders,
+} = require("../controllers/authMiddleware");
 
 const folderRouter = Router();
 
-folderRouter.get("/", isAuth, retrieveFolders, getAllFoldersPage);
+// Ensure retrieveFolders middleware is used for all routes needing folders
+folderRouter.use(isAuth);
+folderRouter.use(retrieveFolders);
 
-folderRouter.get("/:folderName", isAuth, retrieveFolders, getFolderPage);
+folderRouter.get("/", getAllFoldersPage);
 
+folderRouter.get("/:folderName", getFolderPage);
+
+folderRouter.get("/:folderName/edit", getEditFolderPage);
+folderRouter.post("/:folderName/edit", postEditFolderPage);
+
+folderRouter.get("/:folderName/delete", getDeleteFolderPage);
+folderRouter.post("/:folderName/delete", postDeleteFolderPage);
+
+folderRouter.get("/:folderName/share", getShareFolderPage);
+
+folderRouter.post("/:folderName/share", postShareFolderPage);
+
+// More specific routes for file actions
 folderRouter.get(
-  "/:folderName/edit",
-  isAuth,
-  retrieveFolders,
-  getEditFolderPage,
+  "/:folderName/:fileName/delete",
+  retrieveOneFile,
+  getDeleteFilePage,
 );
 
 folderRouter.post(
-  "/:folderName/edit",
-  isAuth,
-  retrieveFolders,
-  postEditFolderPage,
+  "/:folderName/:fileName/delete",
+  retrieveOneFile,
+  postDeleteFilePage,
 );
 
-folderRouter.get(
-  "/:folderName/delete",
-  isAuth,
-  retrieveFolders,
-  getDeleteFolderPage,
-);
-
-folderRouter.post(
-  "/:folderName/delete",
-  isAuth,
-  retrieveFolders,
-  postDeleteFolderPage,
-);
-
-folderRouter.get("/:folderName/:fileName", isAuth, getFilePage);
+folderRouter.get("/:folderName/:fileName", retrieveOneFile, getFilePage);
 
 module.exports = folderRouter;

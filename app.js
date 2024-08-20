@@ -40,9 +40,10 @@ app.use(flash());
 
 app.use((req, res, next) => {
   // Middleware to declare locals
-  res.locals.title = "undefined";
+  res.locals.title = "";
   res.locals.errors = [];
   res.locals.isAuth = false;
+  res.locals.isOwner = true;
   res.locals.flashMess = req.flash("error");
   res.locals.folders = [];
 

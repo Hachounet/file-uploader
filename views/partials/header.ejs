@@ -1,9 +1,19 @@
 <header class="flex flex-al-it-center padleft2 gap05 header">
-  <h1 class="radio-canada-big-400 logo">Cheapest Cloud</h1>
+  <h1 class="radio-canada-big-400 logo"><a href="/home">Cheapest Cloud</a></h1>
   <p class="page playfair-display-400">/<%= title %></p>
 
+  <div class="nav-links flex gap1">
+    <a class="playfair-display-400 font-sx1" href="/home">Home</a>
   <% if (isAuth) { %> 
-    <a href="/logout">Log Out</a>
-    <a href="/upload">Upload</a>
+    <a class="playfair-display-400 font-sx1" href="/logout">Log Out</a>
+    <a class="playfair-display-400 font-sx1" href="/upload">Upload</a>
+    
   <% } %>
+  <% if (!isAuth) { %>
+  <a class="playfair-display-400 font-sx1" href="/signup">Sign up</a>
+  <a class="playfair-display-400 font-sx1" href="/login">Log in</a>
+  <% } %>
+
+  </div>
+    
 </header>

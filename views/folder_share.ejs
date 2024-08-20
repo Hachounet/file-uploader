@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <%- include("./partials/head.ejs") %>
+  <body class="flex flex-dir-col">
+    <%- include("./partials/header.ejs") %>
+
+    <div class="app-container flex flex-al-it-center flex-just-cont-center gap1 flex-dir-col">
+      <form class="flex flex-dir-col flex-just-cont-center flex-al-it-center gap05" action="/folders/<%=folder.title%>/share" method="POST">
+        <label for="shareTime">Time you want to share : </label>
+        <select name="shareTime" >
+            <option value="1">1 day</option>
+            <option value="2">2 days</option>
+            <option value="7">7 days</option>
+            <option value="30">30 days</option>
+        </select>
+        <input type="hidden" name="folderId" value="<%= folder.id %>" />
+        <button type="submit">Share folder</button>
+      </form>
+      <% if (errors && errors.length) { %>
+        <ul>
+          <% errors.forEach((error) => { %>
+            <li><%= error.msg %></li>
+          <% }) %>
+        </ul>
+      <% } %>
+    </div>
+  </body>
+</html>

@@ -3,23 +3,8 @@ const bcrypt = require("bcryptjs");
 const { body, validationResult } = require("express-validator");
 const passport = require("passport");
 const { PrismaClient } = require("@prisma/client");
+const { DateTime } = require("luxon");
 const prisma = new PrismaClient();
-const multer = require("multer");
-const path = require("path");
-
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, path.join(__dirname, "../uploads"));
-  },
-  filename: (req, file, cb) => {
-    cb(
-      null,
-      file.fieldname + "-" + Date.now() + path.extname(file.originalname),
-    ); // Set the file name
-  },
-});
-
-const upload = multer({ storage: storage });
 
 // Custom errors //
 
@@ -119,15 +104,41 @@ exports.getUploadPage = (req, res, next) => {
 };
 
 exports.postUploadPage = [
-  upload.single("file"),
   asyncHandler(async (req, res, next) => {
     try {
+      // Check if a file with the same title exists for the user
+      const existingFile = await prisma.files.findFirst({
+        where: {
+          title: req.file.originalname,
+          ownerId: req.session.passport.user,
+        },
+      });
+
+      if (existingFile) {
+        const errors = [{ msg: "A file with this name already exists." }];
+
+        const allFolders = await prisma.folder.findMany({
+          where: { ownerId: req.session.passport.user },
+        });
+
+        return res.render("upload", {
+          title: "Upload",
+          errors: errors,
+          folders: allFolders,
+          isAuth: req.body.isAuth,
+        });
+      }
+      console.log("HEYYYYYYYYYYYYYYYYYY");
+
+      // Create the new file record in the database
       await prisma.files.create({
         data: {
           title: req.file.originalname,
-          path: `/uploads/${req.file.filename}`,
+          path: req.file.path,
           ownerId: req.session.passport.user,
           folderId: req.body.folderName,
+          size: req.file.size,
+          cloudinaryId: req.file.filename,
         },
       });
 
@@ -151,6 +162,7 @@ exports.getAddFolderPage = (req, res, next) => {
   res.render("addfolder", {
     title: "Add folder",
     folders: req.body.allFolders,
+    isAuth: req.body.isAuth,
   });
 };
 
@@ -165,6 +177,7 @@ exports.postAddFolderPage = [
         title: "Add folder",
         errors: res.locals.errors,
         folders: req.body.allFolders,
+        isAuth: req.body.isAuth,
       });
     }
     try {
@@ -181,3 +194,83 @@ exports.postAddFolderPage = [
     }
   }),
 ];
+
+exports.getShareInstancePage = asyncHandler(async (req, res, next) => {
+  try {
+    const folder = await prisma.sharedInstance.findFirst({
+      where: {
+        id: req.params.id,
+      },
+      include: {
+        origin: {
+          include: {
+            Files: true,
+          },
+        },
+      },
+    });
+
+    if (!folder) {
+      return res.status(404).send("Shared folder not found.");
+    }
+
+    console.log(folder);
+
+    res.render("folder", {
+      title: "Folder",
+      folder: folder.origin,
+      isAuth: req.body.isAuth,
+      folders: req.body.allFolders,
+      sharedInstance: req.params.id,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+exports.getShareFilePage = asyncHandler(async (req, res, next) => {
+  try {
+    const sharedInstance = await prisma.sharedInstance.findFirst({
+      where: { id: req.params.id },
+      include: {
+        origin: {
+          include: {
+            Files: true,
+          },
+        },
+      },
+    });
+
+    if (!sharedInstance) {
+      return res.status(404).json({ error: "Shared instance not found" });
+    }
+
+    const folderOrigin = sharedInstance.origin.id;
+
+    const file = await prisma.files.findFirst({
+      where: { title: req.params.fileName, folderId: folderOrigin },
+    });
+
+    if (!file) {
+      return res.status(404).json({ error: "File not found" });
+    }
+
+    file.createdAt.toLocaleString(DateTime.DATETIME_MED); // For date formatting
+
+    const folderOwner = sharedInstance.origin.ownerId;
+    const isOwner =
+      req.user !== undefined && req.user.id === folderOwner ? true : false;
+
+    console.log(file);
+    res.render("details", {
+      title: file.title,
+      file: file,
+      folders: req.body.allFolders,
+      isAuth: req.body.isAuth,
+      isOwner: isOwner,
+      folder: sharedInstance.origin,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
